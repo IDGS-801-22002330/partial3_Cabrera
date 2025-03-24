@@ -1,0 +1,25 @@
+{% extends "layout.html" %}
+{% import "_macros.html" as macros %}
+{% block container %}
+<div class="max-w-md mx-auto bg-white p-6 rounded-lg shadow-md">
+  <h2 class="text-2xl font-semibold mb-6">Regístrate</h2>
+  <form action="" method="post" novalidate>
+    {{ form.hidden_tag() }}
+    <div>
+      {{ macros.camposNuevos(form.username) }}
+    </div>
+    <div>
+      {{ macros.camposNuevos(form.email) }}
+    </div>
+    <div>
+      {{ macros.camposNuevos(form.password) }}
+    </div>
+    <div>
+      {{ form.submit(class="bg-blue-600 text-white px-4 py-2 rounded-lg") }}
+    </div>
+  </form>
+  <div class="mt-4">
+    ¿Ya tienes cuenta? <a href="{{ url_for('login') }}" class="text-blue-600">Inicia sesión</a>
+  </div>
+</div>
+{% endblock %}

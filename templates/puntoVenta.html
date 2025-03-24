@@ -1,0 +1,176 @@
+{% extends "layout.html" %} {% import '_macros.html' as macros %} {% block
+container %}
+<div class="bg-white p-6 rounded-lg shadow-md mb-8">
+  <h2 class="text-2xl font-semibold mb-6">Pedido de Pizzas</h2>
+  <form method="POST" novalidate>
+    {{ pizza_form.csrf_token }}
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mb-6">
+      <div>{{ macros.camposNuevos(pizza_form.nombre) }}</div>
+      <div>{{ macros.camposNuevos(pizza_form.direccion) }}</div>
+      <div>{{ macros.camposNuevos(pizza_form.telefono) }}</div>
+      <div>{{ macros.camposNuevos(pizza_form.fecha) }}</div>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mb-6">
+      <div class="flex flex-col">
+        <label for="tamano" class="font-semibold mb-2">Tamaño</label><br />
+        <div class="flex space-x-4">
+          <label class="flex items-center space-x-2">
+            <input
+              type="radio"
+              id="tamano_chica"
+              name="tamano"
+              value="Chica"
+              required
+            />
+            <span>Chica $40</span>
+          </label>
+          <label class="flex items-center space-x-2">
+            <input
+              type="radio"
+              id="tamano_mediana"
+              name="tamano"
+              value="Mediana"
+            />
+            <span>Mediana $80</span>
+          </label>
+          <label class="flex items-center space-x-2">
+            <input
+              type="radio"
+              id="tamano_grande"
+              name="tamano"
+              value="Grande"
+            />
+            <span>Grande $120</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="flex flex-col">
+        <label class="font-semibold mb-2">Ingredientes ($10)</label>
+        <div class="flex items-center mb-2">
+          {{ pizza_form.jamon() }} <span class="ml-2">Jamón</span>
+        </div>
+        <div class="flex items-center mb-2">
+          {{ pizza_form.pina() }} <span class="ml-2">Piña</span>
+        </div>
+        <div class="flex items-center mb-2">
+          {{ pizza_form.champi() }} <span class="ml-2">Champiñones</span>
+        </div>
+      </div>
+
+      <div class="flex flex-col">
+        <label for="numero_pizzas" class="font-semibold mb-2"></label>
+        {{ macros.camposNuevos(pizza_form.numero_pizzas) }}
+      </div>
+    </div>
+
+    <div class="flex justify-between mt-4">
+      <div class="flex gap-4">
+        {{ pizza_form.btn_agregar(class="bg-blue-600 text-white px-4 py-2
+        rounded-lg") }}
+        <br />
+      </div>
+      {{ pizza_form.btn_terminar(class="bg-green-600 text-white px-4 py-2
+      rounded-lg") }}
+    </div>
+  </form>
+
+  <table class="w-full text-left border-collapse mt-6">
+    <thead class="bg-gray-100">
+      <tr>
+        <th class="p-3 border">Tamaño</th>
+        <th class="p-3 border">Ingredientes</th>
+        <th class="p-3 border">No. Pizzas</th>
+        <th class="p-3 border">Subtotal</th>
+        <th class="p-3 border">Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for pizza in pizzas %}
+      <tr>
+        <td>{{ pizza.tamano }}</td>
+        <td>{{ pizza.ingredientes }}</td>
+        <td>{{ pizza.numero }}</td>
+        <td>${{ pizza.subtotal }}</td>
+        <td>
+          <form
+            method="POST"
+            action="{{ url_for('eliminar_pizza', index=loop.index0) }}"
+          >
+            {{ pizza_form.csrf_token }}
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+
+            <input type="hidden" name="pizza_id" value="{{ pizza.id }}" />
+            <button type="submit" class="btn-primary">Eliminar</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <div class="text-right mt-4 font-semibold">
+    Total parcial: ${{ subtotal_general }}
+  </div>
+</div>
+
+<div class="bg-white p-6 rounded-lg shadow-md mt-8">
+  <h2 class="text-2xl font-semibold mb-6">Consulta de Ventas</h2>
+  <form method="POST" novalidate>
+    {{ ventas_form.csrf_token }}
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-6">
+      <div>
+        <label for="tipo_busqueda" class="font-semibold mb-2"
+          >Tipo de Búsqueda</label
+        >
+        {{ ventas_form.tipo_busqueda }}
+      </div>
+      <div>
+        <label for="fecha_busqueda" class="font-semibold mb-2">Fecha</label>
+        {{ ventas_form.fecha_busqueda(class="border rounded-lg py-2 px-4") }}
+      </div>
+      <div>
+        {{ ventas_form.btn_buscar(class="bg-blue-600 text-white px-4 py-2
+        rounded-lg") }}
+      </div>
+    </div>
+  </form>
+
+  <table class="w-full text-left border-collapse mt-6">
+    <thead class="bg-gray-100">
+      <tr>
+        <th class="p-3 border">Cliente</th>
+        <th class="p-3 border">Dirección</th>
+        <th class="p-3 border">Teléfono</th>
+        <th class="p-3 border">Fecha</th>
+        <th class="p-3 border">Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for v in ventas %}
+      <tr class="hover:bg-gray-50">
+        <td class="p-3 border">{{ v.nombre }}</td>
+        <td class="p-3 border">{{ v.direccion }}</td>
+        <td class="p-3 border">{{ v.telefono }}</td>
+        <td class="p-3 border">{{ v.fecha_pedido }}</td>
+        <td class="p-3 border text-right">${{ v.total }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <div class="mt-6">
+    <h3 class="font-semibold">Totales por Cliente:</h3>
+    <ul class="list-disc pl-6">
+      {% for cliente, t in agrupado.items() %}
+      <li>{{ cliente }}: ${{ t }}</li>
+      {% endfor %}
+    </ul>
+    <p class="mt-2 font-semibold">Total en el período: ${{ total_dia_mes }}</p>
+  </div>
+</div>
+{% endblock %}
