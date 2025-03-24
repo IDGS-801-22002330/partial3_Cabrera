@@ -7,7 +7,7 @@ import forms
 import os
 from datetime import datetime
 from sqlalchemy import extract
-from flask_login import LoginManager, current_user, login_user, logout_user
+from flask_login import LoginManager, current_user, login_required, login_user, logout_user
 from flask_login import current_user, login_user
 
 app = Flask(__name__)
@@ -70,6 +70,7 @@ def calcular_subtotal(tamano, jamon, pina, champi, numero):
 
 #===============# RUTA PRINCIPAL #===============#
 @app.route('/puntoVenta', methods=['GET', 'POST'])
+@login_required
 def index():
     formulario_pizza = forms.PizzaForm(request.form)
     formulario_ventas = forms.ConsultaVentasForm(request.form)
